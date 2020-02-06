@@ -1,0 +1,3 @@
+/Users/cristianmeono/CLionProjects/Practica1EDD/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/cristianmeono/CLionProjects/Practica1EDD/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/cristianmeono/CLionProjects/Practica1EDD/cmake-build-debug/CMakeFiles/Practica1EDD.dir

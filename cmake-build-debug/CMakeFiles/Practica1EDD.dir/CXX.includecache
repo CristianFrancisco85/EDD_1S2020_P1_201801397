@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/cristianmeono/CLionProjects/Practica1EDD/DoubleLinkedList.h
+Nodo.h
+/Users/cristianmeono/CLionProjects/Practica1EDD/Nodo.h
+
+/Users/cristianmeono/CLionProjects/Practica1EDD/Nodo.h
+
+/Users/cristianmeono/CLionProjects/Practica1EDD/main.cpp
+iostream
+-
+DoubleLinkedList.h
+/Users/cristianmeono/CLionProjects/Practica1EDD/DoubleLinkedList.h
+
