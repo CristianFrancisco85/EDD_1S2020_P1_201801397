@@ -1,19 +1,14 @@
-//
-// Created by Cristian on 5/02/20.
-//
-
 #ifndef PRACTICA1EDD_DOUBLELINKEDLIST_H
 #define PRACTICA1EDD_DOUBLELINKEDLIST_H
-
 #include "Nodo.h"
 
 template <class T>
-
 class DoubleLinkedList {
 public:
     DoubleLinkedList();
     void addBegin(T Value);
     void addEnd(T Value);
+    void addX(T Value , int x);
     T getFirst();
     T getLast();
     int getSize();
@@ -35,46 +30,69 @@ DoubleLinkedList<T>::DoubleLinkedList(){
 
 template <class T>
 T DoubleLinkedList<T>::getFirst() {
-    if(this->Head == NULL){
-        //CONTROLAR EXCEPCION PARA UNA LISTA VACIA
+
+    try {
+        if(this->Head == NULL){
+            throw -1;
+        }
+        else{
+            this->Iterador=this->Head;
+            return this->Iterador->getNodoValue();
+        }
     }
-    else{
-        this->Iterador=this->Head;
-        return this->Iterador->getNodoValue();
+    catch (int x){
+        std::cout<<"ERROR -- LA LISTA ESTA VACIA , NO ES POSIBLE REALIZAR getFirst()";
+        return NULL;
     }
+
 }
 
 template <class T>
 T DoubleLinkedList<T>::getLast() {
-    if(this->Head == NULL){
-        //CONTROLAR EXCEPCION PARA UNA LISTA VACIA
-    }
-    else{
-        this->Iterador=this->Head;
-        while(this->Iterador->getNextNodo()!= NULL){
-            this->Iterador = this->Iterador->getNextNodo();
+
+    try {
+        if (this->Head == NULL) {
+            throw -1;
+        } else {
+            this->Iterador = this->Head;
+            while (this->Iterador->getNextNodo() != NULL) {
+                this->Iterador = this->Iterador->getNextNodo();
+            }
+            return this->Iterador->getNodoValue();
         }
-        return this->Iterador->getNodoValue();
+    }
+    catch (int x){
+        std::cout<<"ERROR -- LA LISTA ESTA VACIA , NO ES POSIBLE REALIZAR getLast()";
+        return NULL;
     }
 }
 
 template <class T>
 T DoubleLinkedList<T>::getXNode(int x ){
-    if(this->Head == NULL){
-        //CONTROLAR EXCEPCION PARA UNA LISTA VACIA
-    }
-    else{
-        this->Iterador=this->Head;
-        for(int i =0;i<x;i++){
-            if(this->Iterador->getNextNodo()==NULL){
-                //CONTROLAR EXCEPCION DE NODO INEXISTENTE
-                return 0;
+    try {
+        if (this->Head == NULL) {
+            throw -1;
+        } else {
+            this->Iterador = this->Head;
+            try {
+                for (int i = 0; i < x; i++) {
+                    if (this->Iterador->getNextNodo() == NULL) {
+                        throw -1;
+                    } else {
+                        this->Iterador = this->Iterador->getNextNodo();
+                    }
+                }
+                return this->Iterador->getNodoValue();
             }
-            else {
-                this->Iterador = this->Iterador->getNextNodo();
+            catch (int x1) {
+                std::cout << "ERROR -- NO EXISTE NODO EN LA POSICION " <<x;
+                return NULL;
             }
         }
-        return this->Iterador->getNodoValue();
+    }
+    catch (int x){
+        std::cout<<"ERROR -- LA LISTA ESTA VACIA , NO ES POSIBLE REALIZAR getXNode()";
+        return NULL;
     }
 }
 
@@ -90,6 +108,7 @@ void DoubleLinkedList<T>::addBegin(T Value) {
         NewNode->setNextNodo(this->Head);
         this->Head = NewNode;
     }
+    this->Size++;
 }
 
 template <class T>
@@ -108,32 +127,91 @@ void DoubleLinkedList<T>::addEnd(T Value) {
         this->Iterador->setNextNodo(NewNode);
         NewNode->setPrevNodo(this->Iterador);
     }
+    this->Size++;
+}
+
+template <class T>
+void DoubleLinkedList<T>::addX(T Value , int x ) {
+    try {
+        if (this->Head == NULL || x==0 || x>=(this->Size)-1 ) {
+            throw -1;
+        }
+        else {
+            Nodo<T> *NewNode = new Nodo<T>;
+            NewNode->setNodoValue(Value);
+            this->Iterador = this->Head;
+            try {
+                for (int i = 0; i < x; i++) {
+                    if (this->Iterador->getNextNodo() == NULL) {
+                        throw -1;
+                    } else {
+                        this->Iterador = this->Iterador->getNextNodo();
+                    }
+                }
+                this->Iterador->getPrevNodo()->setNextNodo(NewNode);
+                NewNode->setPrevNodo(this->Iterador->getPrevNodo());
+                this->Iterador->setPrevNodo(NewNode);
+                NewNode->setNextNodo(this->Iterador);
+                this->Size++;
+            }
+            catch (int x1) {
+                std::cout << "ERROR -- NO EXISTE NODO EN LA POSICION " << x <<" PARA PODER INSERTAR"<<std::endl;
+            }
+        }
+    }
+    catch (int x){
+        std::cout<<"ERROR -- LA LISTA ESTA VACIA , NO ES POSIBLE REALIZAR deleteXNode()"<<std::endl;
+        std::cout<<"ERROR -- PARA INSERTAR EN CABEZA Y COLA UTILIZE addBEgin() y addEnd()";
+    }
 }
 
 template <class T>
 void DoubleLinkedList<T>::deleteXNode(int x) {
-    if(this->Head == NULL){
-        //CONTROLAR EXCEPCION PARA UNA LISTA VACIA
-    }
-    else{
-        this->Iterador=this->Head;
-        for(int i =0;i<x;i++){
-            if(this->Iterador->getNextNodo()==NULL){
-                //CONTROLAR EXCEPCION DE NODO INEXISTENTE
+    try {
+        if (this->Head == NULL) {
+            throw -1;
+        }
+        else {
+            this->Iterador = this->Head;
+            try {
+                for (int i = 0; i < x; i++) {
+                    if (this->Iterador->getNextNodo() == NULL) {
+                        throw -1;
+                    } else {
+                        this->Iterador = this->Iterador->getNextNodo();
+                    }
+                }
+                if(this->Iterador->getPrevNodo() == NULL && this->Iterador->getNextNodo() == NULL){
+                    this->Head=NULL;
+                }
+                else if(this->Iterador->getPrevNodo() == NULL){
+                    this->Iterador->getNextNodo()->setPrevNodo(NULL);
+                    this->Head=this->Iterador->getNextNodo();
+                }
+                else if(this->Iterador->getNextNodo() == NULL){
+                    this->Iterador->getPrevNodo()->setNextNodo(NULL);
+                }
+                else {
+                    this->Iterador->getPrevNodo()->setNextNodo(this->Iterador->getNextNodo());
+                    this->Iterador->getNextNodo()->setPrevNodo(this->Iterador->getPrevNodo());
+                }
+                this->Size--;
+                delete this->Iterador;
+                this->Iterador = NULL;
             }
-            else {
-                this->Iterador = this->Iterador->getNextNodo();
+            catch (int x1) {
+                std::cout << "ERROR -- NO EXISTE NODO EN LA POSICION " << x;
             }
         }
-        this->Iterador->getPrevNodo()->setNextNodo(this->Iterador->getNextNodo());
-        this->Iterador->getNextNodo()->setPrevNodo(this->Iterador->getPrevNodo());
-        delete this->Iterador;
-        this->Iterador=NULL;
-
+    }
+    catch (int x){
+        std::cout<<"ERROR -- LA LISTA ESTA VACIA , NO ES POSIBLE REALIZAR deleteXNode()";
     }
 }
 
-
-
+template <class T>
+int DoubleLinkedList<T>::getSize() {
+    return this->Size;
+}
 
 #endif //PRACTICA1EDD_DOUBLELINKEDLIST_H

@@ -2,5 +2,13 @@ cmake_minimum_required(VERSION 3.15)
 project(Practica1EDD)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "-lncurses")
 
-add_executable(Practica1EDD main.cpp Nodo.h DoubleLinkedList.h)
+find_package(Curses REQUIRED)
+include_directories(${CURSES_INCLUDE_DIR})
+
+include_directories(include)
+file(GLOB SOURCES "*.c")
+
+add_executable(Practica1EDD main.cpp Nodo.h DoubleLinkedList.h Stack.h)
+target_link_libraries(Practica1EDD ${CURSES_LIBRARIES})

@@ -1,12 +1,7 @@
-//
-// Created by Cristian on 5/02/20.
-//
-
 #ifndef PRACTICA1EDD_NODO_H
 #define PRACTICA1EDD_NODO_H
 
 template <class T>
-
 class Nodo {
 
 public:
@@ -24,6 +19,7 @@ private:
     Nodo<T> *PrevNodo;
     T Valor;
 };
+
 
 //Constructor
 template <class T>
@@ -56,7 +52,6 @@ T Nodo<T>::getNodoValue() {
     return this->Valor;
 }
 
-
 // Retorna un Apuntador Nodo
 template <class T>
 Nodo<T>* Nodo<T>::getNextNodo() {
@@ -68,5 +63,7 @@ template <class T>
 Nodo<T>* Nodo<T>::getPrevNodo() {
     return this->PrevNodo;
 }
+
+
 
 #endif //PRACTICA1EDD_NODO_H
