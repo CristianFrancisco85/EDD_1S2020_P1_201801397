@@ -12,9 +12,19 @@ Nodo.h
 
 /Users/cristianmeono/CLionProjects/Practica1EDD/Nodo.h
 
+/Users/cristianmeono/CLionProjects/Practica1EDD/Stack.h
+Nodo.h
+/Users/cristianmeono/CLionProjects/Practica1EDD/Nodo.h
+iostream
+-
+
 /Users/cristianmeono/CLionProjects/Practica1EDD/main.cpp
 iostream
 -
 DoubleLinkedList.h
 /Users/cristianmeono/CLionProjects/Practica1EDD/DoubleLinkedList.h
+Stack.h
+/Users/cristianmeono/CLionProjects/Practica1EDD/Stack.h
+ncurses.h
+-
 

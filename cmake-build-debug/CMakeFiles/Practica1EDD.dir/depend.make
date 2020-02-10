@@ -3,5 +3,6 @@
 
 CMakeFiles/Practica1EDD.dir/main.cpp.o: ../DoubleLinkedList.h
 CMakeFiles/Practica1EDD.dir/main.cpp.o: ../Nodo.h
+CMakeFiles/Practica1EDD.dir/main.cpp.o: ../Stack.h
 CMakeFiles/Practica1EDD.dir/main.cpp.o: ../main.cpp
 

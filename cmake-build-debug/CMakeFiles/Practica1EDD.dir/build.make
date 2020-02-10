@@ -79,6 +79,8 @@ Practica1EDD_EXTERNAL_OBJECTS =
 
 Practica1EDD: CMakeFiles/Practica1EDD.dir/main.cpp.o
 Practica1EDD: CMakeFiles/Practica1EDD.dir/build.make
+Practica1EDD: /usr/lib/libcurses.dylib
+Practica1EDD: /usr/lib/libform.dylib
 Practica1EDD: CMakeFiles/Practica1EDD.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/cristianmeono/CLionProjects/Practica1EDD/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable Practica1EDD"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/Practica1EDD.dir/link.txt --verbose=$(VERBOSE)
