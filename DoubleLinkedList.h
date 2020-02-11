@@ -69,6 +69,7 @@ T DoubleLinkedList<T>::getLast() {
 
 template <class T>
 T DoubleLinkedList<T>::getXNode(int x ){
+
     try {
         if (this->Head == NULL) {
             throw -1;
@@ -102,6 +103,7 @@ void DoubleLinkedList<T>::addBegin(T Value) {
     NewNode->setNodoValue(Value);
     if(this->Head==NULL){
         this->Head=NewNode;
+
     }
     else {
         this->Head->setPrevNodo(NewNode);
@@ -160,14 +162,16 @@ void DoubleLinkedList<T>::addX(T Value , int x ) {
         }
     }
     catch (int x){
-        std::cout<<"ERROR -- LA LISTA ESTA VACIA , NO ES POSIBLE REALIZAR deleteXNode()"<<std::endl;
+        std::cout<<"ERROR -- LA LISTA ESTA VACIA , NO ES POSIBLE REALIZAR addXNode()"<<std::endl;
         std::cout<<"ERROR -- PARA INSERTAR EN CABEZA Y COLA UTILIZE addBEgin() y addEnd()";
     }
 }
 
 template <class T>
 void DoubleLinkedList<T>::deleteXNode(int x) {
+
     try {
+
         if (this->Head == NULL) {
             throw -1;
         }
@@ -195,7 +199,7 @@ void DoubleLinkedList<T>::deleteXNode(int x) {
                     this->Iterador->getPrevNodo()->setNextNodo(this->Iterador->getNextNodo());
                     this->Iterador->getNextNodo()->setPrevNodo(this->Iterador->getPrevNodo());
                 }
-                this->Size--;
+                this -> Size--;
                 delete this->Iterador;
                 this->Iterador = NULL;
             }
