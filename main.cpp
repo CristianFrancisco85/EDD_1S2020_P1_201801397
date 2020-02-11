@@ -4,6 +4,8 @@
 #include <curses.h>
 #include <clocale>
 #include <fstream>
+#include <string>
+
 
 using namespace std;
 
@@ -24,7 +26,7 @@ string getText(DoubleLinkedList<char> *Lista);
 //GUARDA EL ARCHIVO
 void saveArchive(DoubleLinkedList<char> *Lista);
 //MENU DE REPORTES
-void showMenuReportes(WINDOW * win,DoubleLinkedList<char> *Lista)
+void showMenuReportes(WINDOW * win,DoubleLinkedList<char> *Lista,int posy,int posx);
 // GRAFICA LA LISTA
 void graphList (DoubleLinkedList<char> *Lista);
 
@@ -130,10 +132,11 @@ void newArchive(WINDOW * win){
         switch (ch){
             //BUSCAR Y REEMPLAZAR ^W
             case 23:
+
                 break;
             // REPORTES ^C
-            case 3:
-                showMenuReportes(win,&TempArchivo);
+            case 18:
+                showMenuReportes(win,&TempArchivo,posy,posx);
                 break;
             // GUARDAR ^S
             case 19:
@@ -233,26 +236,29 @@ void saveArchive(DoubleLinkedList<char> *Lista){
 }
 
 void graphList (DoubleLinkedList<char> *Lista){
+    string command = "";
     ofstream file;
     file.open("./grafica"+to_string(archivo)+".dot",  fstream::in | fstream::out | fstream::trunc);
-    archivo++;
     file << "digraph {";
     file << "node [shape=box];"<<endl;
     for(int i =0;i<Lista->getSize()-1;i++){
-        file << to_string(i) + "_" + Lista->getXNode(i) + "->" + to_string(i+1) + "_" + Lista->getXNode(i+1) + ";" <<endl;
-        file << to_string(i+1) + "_" + Lista->getXNode(i) + "->" + to_string(i+1) + "_" + Lista->getXNode(i) + ";" <<endl;
+        file << to_string(i) + Lista->getXNode(i) + "->" + to_string(i+1)  + Lista->getXNode(i+1) + ";" <<endl;
+        file << to_string(i+1)  + Lista->getXNode(i+1) + "->" + to_string(i)  + Lista->getXNode(i) + ";" <<endl;
     }
     file << "}";
     file.close();
+    command = "dot -Tpng ./grafica"+to_string(archivo)+".dot -o ImagenGrafica"+to_string(archivo)+".png >>/dev/null 2>>/dev/null";
+    system(command.c_str());
+    archivo++;
 }
 
-void showMenuReportes(WINDOW * win,DoubleLinkedList<char> *Lista){
+void showMenuReportes(WINDOW * win,DoubleLinkedList<char> *Lista,int posy,int posx){
     //ENCABEZADO
     attron(A_REVERSE);
     move(0,2);
-    printw("             ^W(Buscar y Reemplazar)  ^C(Reportes)  ^S(GUARDAR)             ");
+    printw("         Reportes:     1.Lista   2.Palabras Buscadas   3.Palabras Ordenadas      ");
     attroff(A_REVERSE);
-
+    wrefresh(win);
     bool Control = true;
 
     while(Control){
@@ -262,6 +268,8 @@ void showMenuReportes(WINDOW * win,DoubleLinkedList<char> *Lista){
                 //OPCION 1 -- Lista
             case 49:
                 graphList(Lista);
+                Control = false;
+
                 break;
                 //OPCION 2  -- Palabras Buscadas
             case 50:
@@ -276,5 +284,10 @@ void showMenuReportes(WINDOW * win,DoubleLinkedList<char> *Lista){
         }
     }
 
-    wmove(win,0,0);
+    attron(A_REVERSE);
+    move(0,2);
+    printw("             ^W(Buscar y Reemplazar)  ^C(Reportes)  ^S(GUARDAR)             ");
+    attroff(A_REVERSE);
+
+    wmove(win,posy,posx);
 }
