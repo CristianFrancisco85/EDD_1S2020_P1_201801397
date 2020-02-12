@@ -1,5 +1,6 @@
 #ifndef PRACTICA1EDD_NODO_H
 #define PRACTICA1EDD_NODO_H
+#include "Word.h"
 
 template <class T>
 class Nodo {

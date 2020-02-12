@@ -1,6 +1,7 @@
 #include <iostream>
 #include "DoubleLinkedList.h"
 #include "Stack.h"
+#include "Word.h"
 #include <curses.h>
 #include <clocale>
 #include <fstream>
@@ -11,24 +12,44 @@ using namespace std;
 
 //MUESTRA MENU
 void showMenu(WINDOW * win);
+
 // LIMPIA VENTANA DE TEXTO
 void clearWin(WINDOW * win);
+
 // CREA UN NUEVO ARCHIVO
 void newArchive(WINDOW * win);
+
 //MUEVE HACIA ATRAS EL CURSOR
 void moveBack(WINDOW * win,int posy,int posx);
+
 //MUEVE HACIA ADELANTE EL CURSOR
 void moveFront(WINDOW * win,int posy,int posx);
+
 //ELIMINA UN CARCTER HACIA ATRAS EN PANTALLA Y LISTA
 void deleteChar(WINDOW * win,int posy,int posx,DoubleLinkedList<char> *Lista);
+
 //DEVUELVE EL TEXTO EN LA LISTA
 string getText(DoubleLinkedList<char> *Lista);
+
 //GUARDA EL ARCHIVO
 void saveArchive(DoubleLinkedList<char> *Lista);
+
 //MENU DE REPORTES
-void showMenuReportes(WINDOW * win,DoubleLinkedList<char> *Lista,int posy,int posx);
+void showReportsMenu(WINDOW * win, DoubleLinkedList<char> *Lista, int posy, int posx);
+
 // GRAFICA LA LISTA
 void graphList (DoubleLinkedList<char> *Lista);
+
+//DIVIDE LA LISTA DE CARACTERES EN UNA LISTA DE PALABRAS
+void divideWords(DoubleLinkedList<char> *ListaCh , DoubleLinkedList<Word> *ListaWor);
+
+// BUSCA Y REEMPLAZA EN BASE A PALABRAS ACTUALIZA LISTA DE CARACTERES
+int searchAndReplace (DoubleLinkedList<char> *ListaCh , DoubleLinkedList<Word> *ListaWor, string palabraBuscar , string palabraReemplazar);
+
+//PIDE PARAMETROS AL USUARIO Y LOS MUESTRA EN PANTALLA
+void showSearchAndReplace(WINDOW * win, DoubleLinkedList<char> *ListaCh ,DoubleLinkedList<Word> *ListaWor);
+
+// VARIABLES GLOBALES
 
 int archivo=0;
 
@@ -111,7 +132,10 @@ void showMenu(WINDOW * win){
 }
 
 void newArchive(WINDOW * win){
+
     DoubleLinkedList<char> TempArchivo;
+    DoubleLinkedList<Word> WordsList;
+
     //ENCABEZADO
     attron(A_REVERSE);
     move(0,2);
@@ -132,11 +156,11 @@ void newArchive(WINDOW * win){
         switch (ch){
             //BUSCAR Y REEMPLAZAR ^W
             case 23:
-
+                showSearchAndReplace(win,&TempArchivo,&WordsList);
                 break;
             // REPORTES ^C
-            case 18:
-                showMenuReportes(win,&TempArchivo,posy,posx);
+            case 3:
+                showReportsMenu(win, &TempArchivo, posy, posx);
                 break;
             // GUARDAR ^S
             case 19:
@@ -175,46 +199,11 @@ void newArchive(WINDOW * win){
 
 }
 
-//FUNCIONES UTILITARIAS
+//MANEJO DE INTERFAZ EN CONSOLA
 
 void clearWin(WINDOW * win){
     werase(win);
     wrefresh(win);
-}
-
-void moveBack(WINDOW * win,int posy,int posx){
-
-    if(posx == 0 && posy != 0){
-        wmove(win,posy-1,80);
-    }
-    else if(posx > 0 ){
-       wmove(win,posy,posx-1);
-    }
-
-}
-
-void moveFront(WINDOW * win,int posy,int posx){
-
-    if(posx == 80 && posy != 25){
-        wmove(win,posy+1,0);
-    }
-    else{
-        wmove(win,posy,posx+1);
-    }
-
-}
-
-void deleteChar(WINDOW * win,int posy,int posx,DoubleLinkedList<char> *Lista){
-
-    if((posx+(posy*80))<=Lista->getSize() && Lista->getSize()>0){
-        if(posy>0){
-            Lista->deleteXNode(posx+(posy*80)-1);
-        }
-        else{
-            Lista->deleteXNode(posx-1);
-        }
-    }
-
 }
 
 string getText(DoubleLinkedList<char> *Lista){
@@ -241,10 +230,13 @@ void graphList (DoubleLinkedList<char> *Lista){
     file.open("./grafica"+to_string(archivo)+".dot",  fstream::in | fstream::out | fstream::trunc);
     file << "digraph {";
     file << "node [shape=box];"<<endl;
+    file << "\"NULL\" [shape=plain];"<<endl;
+    file << "\" " + to_string(0) +" : "+Lista->getXNode(0) +  " \" -> \"NULL\" [shape=plain] ;" <<endl;
     for(int i =0;i<Lista->getSize()-1;i++){
-        file << to_string(i) + Lista->getXNode(i) + "->" + to_string(i+1)  + Lista->getXNode(i+1) + ";" <<endl;
-        file << to_string(i+1)  + Lista->getXNode(i+1) + "->" + to_string(i)  + Lista->getXNode(i) + ";" <<endl;
+        file << "\" " + to_string(i) +" : "+Lista->getXNode(i) +  " \" -> " + "\" " + to_string(i+1) + " : " + Lista->getXNode(i+1) + " \" ;" <<endl;
+        file << "\" " + to_string(i+1) +" : "+Lista->getXNode(i+1) +  " \" -> " + "\" " + to_string(i) + " : " + Lista->getXNode(i) + " \" ;" <<endl;
     }
+    file << "\" " + to_string(Lista->getSize()-1) +" : "+Lista->getXNode(Lista->getSize()-1) +  " \" -> \"NULL.\" ;" <<endl;
     file << "}";
     file.close();
     command = "dot -Tpng ./grafica"+to_string(archivo)+".dot -o ImagenGrafica"+to_string(archivo)+".png >>/dev/null 2>>/dev/null";
@@ -252,11 +244,11 @@ void graphList (DoubleLinkedList<char> *Lista){
     archivo++;
 }
 
-void showMenuReportes(WINDOW * win,DoubleLinkedList<char> *Lista,int posy,int posx){
+void showReportsMenu(WINDOW * win, DoubleLinkedList<char> *Lista, int posy, int posx){
     //ENCABEZADO
     attron(A_REVERSE);
     move(0,2);
-    printw("         Reportes:     1.Lista   2.Palabras Buscadas   3.Palabras Ordenadas      ");
+    printw("         Reportes:   1.Lista    2.Palabras Buscadas    3.Palabras Ordenadas      ");
     attroff(A_REVERSE);
     wrefresh(win);
     bool Control = true;
@@ -269,7 +261,6 @@ void showMenuReportes(WINDOW * win,DoubleLinkedList<char> *Lista,int posy,int po
             case 49:
                 graphList(Lista);
                 Control = false;
-
                 break;
                 //OPCION 2  -- Palabras Buscadas
             case 50:
@@ -289,5 +280,147 @@ void showMenuReportes(WINDOW * win,DoubleLinkedList<char> *Lista,int posy,int po
     printw("             ^W(Buscar y Reemplazar)  ^C(Reportes)  ^S(GUARDAR)             ");
     attroff(A_REVERSE);
 
-    wmove(win,posy,posx);
+    wmove(win,posy,posx+1);
+}
+
+void showSearchAndReplace(WINDOW * win, DoubleLinkedList<char> *ListaCh ,DoubleLinkedList<Word> *ListaWor){
+
+    //SE DIVIDE EN PALABRAS LOS CARACTERES ACTUALES
+    divideWords(ListaCh,ListaWor);
+
+    //ENCABEZADO
+    attron(A_REVERSE);
+    move(0,2);
+    printw("         Sintaxis<PalabraBuscar;PalabrasReemplazar: ");
+
+    wrefresh(win);
+    bool Control = true;
+    string params;
+
+    while(Control){
+        int ch = getch();
+        switch (ch){
+
+            case 10: {
+                attroff(A_REVERSE);
+                string arg1 = params.substr(0, params.find(";"));
+                string arg2 = params.substr(params.find(";") + 1, params.length() - 1);
+                searchAndReplace(ListaCh, ListaWor, arg1, arg2);
+                Control = false;
+                break;
+            }
+            default:
+            //GUARDA EL CARACTER Y LO IMPRIME
+                params = params + to_string(ch);
+                printw("%c",ch);
+                wrefresh(win);
+
+        }
+    }
+
+    attron(A_REVERSE);
+    move(0,2);
+    printw("             ^W(Buscar y Reemplazar)  ^C(Reportes)  ^S(GUARDAR)             ");
+    attroff(A_REVERSE);
+
+    clearWin(win);
+    mvwprintw(win,0,0,getText(ListaCh).c_str());
+    wrefresh(win);
+}
+
+
+//MANEJO DE DATOS
+
+void divideWords(DoubleLinkedList<char> *ListaCh , DoubleLinkedList<Word> *ListaWor){
+
+    Word *TempWord = new Word();
+    string TempText="";
+    int posB,posE;
+
+    for(int i =0;i<ListaCh->getSize();i++){
+
+        if(ListaCh->getXNode(i) != 32 ){
+            posB=i;
+            for(int j =i ;j<ListaCh->getSize();j++){
+                if(ListaCh->getXNode(j) == 32){
+                    posE = j-1;
+                    i = j-1;
+                    TempWord->setPosBegin(posB);
+                    TempWord->setPosEnd(posE);
+                    TempWord->setWord(TempText);
+                    ListaWor->addEnd(*TempWord);
+                    TempText="";
+                    break;
+                }
+                else{
+                    TempText= TempText+ListaCh->getXNode(j);
+                }
+            }
+        }
+    }
+
+    delete TempWord;
+
+}
+
+int searchAndReplace (DoubleLinkedList<char> *ListaCh , DoubleLinkedList<Word> *ListaWor, string palabraBuscar , string palabraReemplazar){
+
+    //Word *TempWord = new Word();
+    int Changes=0;
+    for(int i =0;i<ListaCh->getSize();i++){
+
+        //*TempWord = ListaWor->getXNode(i);
+        if(ListaWor->getXNode(i).getWord() == palabraBuscar){
+
+            for(int j = ListaWor->getXNode(i).getPosBegin() ; j<=ListaWor->getXNode(i).getPosEnd() ; j++){
+                ListaCh->deleteXNode(j);
+            }
+            for(int j = ListaWor->getXNode(i).getPosBegin() ; j<=ListaWor->getXNode(i).getPosBegin()+palabraReemplazar.length(); j++){
+                ListaCh->addX(palabraReemplazar.at(j-ListaWor->getXNode(i).getPosBegin()),j);
+                ListaWor->getXNode(i).setPosEnd(j);
+            }
+            ListaWor->getXNode(i).setWord(palabraReemplazar);
+            Changes++;
+        }
+    }
+
+    return Changes;
+
+}
+
+
+//FUNCIONES DE CURSOR
+void moveBack(WINDOW * win,int posy,int posx){
+
+    if(posx == 0 && posy != 0){
+        wmove(win,posy-1,80);
+    }
+    else if(posx > 0 ){
+        wmove(win,posy,posx-1);
+    }
+
+}
+
+void moveFront(WINDOW * win,int posy,int posx){
+
+    if(posx == 80 && posy != 25){
+        wmove(win,posy+1,0);
+    }
+    else{
+        wmove(win,posy,posx+1);
+    }
+
+}
+
+void deleteChar(WINDOW * win,int posy,int posx,DoubleLinkedList<char> *Lista){
+
+    if((posx+(posy*80))<=Lista->getSize() && Lista->getSize()>0){
+        if(posy>0){
+            Lista->deleteXNode(posx+(posy*80)-1);
+        }
+        else{
+            Lista->deleteXNode(posx-1);
+        }
+    }
+
 }

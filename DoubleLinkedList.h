@@ -1,6 +1,7 @@
 #ifndef PRACTICA1EDD_DOUBLELINKEDLIST_H
 #define PRACTICA1EDD_DOUBLELINKEDLIST_H
 #include "Nodo.h"
+#include "Word.h"
 
 template <class T>
 class DoubleLinkedList {
@@ -69,7 +70,7 @@ T DoubleLinkedList<T>::getLast() {
 
 template <class T>
 T DoubleLinkedList<T>::getXNode(int x ){
-
+    Nodo<T> NullNodo;
     try {
         if (this->Head == NULL) {
             throw -1;
@@ -87,15 +88,18 @@ T DoubleLinkedList<T>::getXNode(int x ){
             }
             catch (int x1) {
                 std::cout << "ERROR -- NO EXISTE NODO EN LA POSICION " <<x;
-                return NULL;
+                return NullNodo.getNodoValue();
+                //return NULL;
             }
         }
     }
     catch (int x){
         std::cout<<"ERROR -- LA LISTA ESTA VACIA , NO ES POSIBLE REALIZAR getXNode()";
-        return NULL;
+        return NullNodo.getNodoValue();
+        //return NULL;
     }
 }
+
 
 template <class T>
 void DoubleLinkedList<T>::addBegin(T Value) {
