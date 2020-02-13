@@ -47,7 +47,7 @@ void divideWords(DoubleLinkedList<char> *ListaCh , DoubleLinkedList<Word> *Lista
 int searchAndReplace (DoubleLinkedList<char> *ListaCh , DoubleLinkedList<Word> *ListaWor, string palabraBuscar , string palabraReemplazar);
 
 //PIDE PARAMETROS AL USUARIO Y LOS MUESTRA EN PANTALLA
-void showSearchAndReplace(WINDOW * win, DoubleLinkedList<char> *ListaCh ,DoubleLinkedList<Word> *ListaWor);
+void showSearchAndReplace(WINDOW * win, DoubleLinkedList<char> *ListaCh);
 
 // VARIABLES GLOBALES
 
@@ -87,8 +87,6 @@ int main() {
 
     while(Control){
         int ch = getch();
-        wprintw(win,"%d",ch);
-        wrefresh(win);
 
         switch(ch){
                 //OPCION 1 -- Crear Archivo
@@ -107,8 +105,12 @@ int main() {
                 break;
                 //OPCION 4 -- Salir
             case 52:
-                wprintw(win,"Derecha");
+                clearWin(win);
+                mvwprintw(win,0,0,"Hasta la proxima -- Presione una tecla para continuar...");
                 wrefresh(win);
+                getch();
+                clearWin(win);
+                endwin();
                 Control = false;
                 break;
         }
@@ -134,7 +136,6 @@ void showMenu(WINDOW * win){
 void newArchive(WINDOW * win){
 
     DoubleLinkedList<char> TempArchivo;
-    DoubleLinkedList<Word> WordsList;
 
     //ENCABEZADO
     attron(A_REVERSE);
@@ -147,6 +148,7 @@ void newArchive(WINDOW * win){
     //UBICACION DE CURSOR
     int posx = 0;
     int posy = 0;
+    int pointerList=0;
     int ch;
     bool Control = true;
 
@@ -156,7 +158,7 @@ void newArchive(WINDOW * win){
         switch (ch){
             //BUSCAR Y REEMPLAZAR ^W
             case 23:
-                showSearchAndReplace(win,&TempArchivo,&WordsList);
+                showSearchAndReplace(win,&TempArchivo);
                 break;
             // REPORTES ^C
             case 3:
@@ -166,32 +168,63 @@ void newArchive(WINDOW * win){
             case 19:
                 saveArchive(&TempArchivo);
                 break;
+            // GUARDAR ^S
+            case 24:
+                clearWin(win);
+                mvwprintw(win,0,0,"Hasta la proxima -- Presione una tecla para continuar...");
+                wrefresh(win);
+                getch();
+                clearWin(win);
+                showMenu(win);
+                Control=false;
+                break;
             //MOVER CURSOR ATRAS
             case KEY_LEFT:
-                moveBack(win,posy,posx);
-                getyx(win,posy,posx);
-                wrefresh(win);
+                if(pointerList>0){
+                    pointerList--;
+                    moveBack(win,posy,posx);
+                    getyx(win,posy,posx);
+                    wrefresh(win);
+                }
                 break;
             //MOVER CURSOR ADELANTE
             case KEY_RIGHT:
-                moveFront(win,posy,posx);
-                getyx(win,posy,posx);
-                wrefresh(win);
+                if(pointerList<TempArchivo.getSize()){
+                    pointerList++;
+                    moveFront(win,posy,posx);
+                    getyx(win,posy,posx);
+                    wrefresh(win);
+                }
                 break;
             //ELIMINAR CARACTER
             case 127:
-                moveBack(win,posy,posx);
-                deleteChar(win,posy,posx,&TempArchivo);
-                wdelch(win);
-                wrefresh(win);
-                getyx(win,posy,posx);
+                if(pointerList>0){
+                    pointerList--;
+                    moveBack(win,posy,posx);
+                    TempArchivo.deleteXNode(pointerList);
+                    //deleteChar(win,posy,posx,&TempArchivo);
+                    wdelch(win);
+                    wrefresh(win);
+                    getyx(win,posy,posx);
+                }
                 break;
             //GUARDA UN CARACTER Y LO IMPRIME
             default:
-                TempArchivo.addEnd((char)ch);
-                wprintw(win,"%c",ch);
-                wrefresh(win);
-                getyx(win,posy,posx);
+                if(ch>=32 && ch<=126){
+                    if(pointerList==TempArchivo.getSize()){
+                        TempArchivo.addX((char)ch,pointerList);
+                        //TempArchivo.addEnd((char)ch);
+                    }
+                    else{
+                        TempArchivo.deleteXNode(pointerList);
+                        TempArchivo.addX((char)ch,pointerList);
+                    }
+                    pointerList++;
+                    wprintw(win,"%c",ch);
+                    wrefresh(win);
+                    getyx(win,posy,posx);
+                }
+
                 break;
         }
 
@@ -283,19 +316,23 @@ void showReportsMenu(WINDOW * win, DoubleLinkedList<char> *Lista, int posy, int 
     wmove(win,posy,posx+1);
 }
 
-void showSearchAndReplace(WINDOW * win, DoubleLinkedList<char> *ListaCh ,DoubleLinkedList<Word> *ListaWor){
+void showSearchAndReplace(WINDOW * win, DoubleLinkedList<char> *ListaCh ){
 
     //SE DIVIDE EN PALABRAS LOS CARACTERES ACTUALES
+    DoubleLinkedList<Word> *ListaWor = new DoubleLinkedList<Word>;
     divideWords(ListaCh,ListaWor);
 
     //ENCABEZADO
     attron(A_REVERSE);
     move(0,2);
+    printw("         Sintaxis<PalabraBuscar;PalabrasReemplazar:                               ");
+    move(0,2);
     printw("         Sintaxis<PalabraBuscar;PalabrasReemplazar: ");
 
     wrefresh(win);
     bool Control = true;
-    string params;
+    string params="";
+    int changes=0;
 
     while(Control){
         int ch = getch();
@@ -305,16 +342,27 @@ void showSearchAndReplace(WINDOW * win, DoubleLinkedList<char> *ListaCh ,DoubleL
                 attroff(A_REVERSE);
                 string arg1 = params.substr(0, params.find(";"));
                 string arg2 = params.substr(params.find(";") + 1, params.length() - 1);
-                searchAndReplace(ListaCh, ListaWor, arg1, arg2);
+                changes=searchAndReplace(ListaCh, ListaWor, arg1, arg2);
                 Control = false;
                 break;
             }
+            case 24:
+                clearWin(win);
+                mvwprintw(win,0,0,"Hasta la proxima -- Presione una tecla para continuar...");
+                wrefresh(win);
+                getch();
+                clearWin(win);
+                showMenu(win);
+                Control=false;
+                break;
             default:
             //GUARDA EL CARACTER Y LO IMPRIME
-                params = params + to_string(ch);
-                printw("%c",ch);
-                wrefresh(win);
-
+                if(ch>32 && ch<=126) {
+                    params.push_back(ch);
+                    printw("%c", ch);
+                    wrefresh(win);
+                }
+                break;
         }
     }
 
@@ -322,7 +370,13 @@ void showSearchAndReplace(WINDOW * win, DoubleLinkedList<char> *ListaCh ,DoubleL
     move(0,2);
     printw("             ^W(Buscar y Reemplazar)  ^C(Reportes)  ^S(GUARDAR)             ");
     attroff(A_REVERSE);
-
+    clearWin(win);
+    mvwprintw(win,0,0,"Se han realizado ");
+    wprintw(win,to_string(changes).c_str());
+    wprintw(win," cambios");
+    mvwprintw(win,1,0,"Presione cualquier tecla para continuar");
+    wrefresh(win);
+    getch();
     clearWin(win);
     mvwprintw(win,0,0,getText(ListaCh).c_str());
     wrefresh(win);
@@ -336,13 +390,27 @@ void divideWords(DoubleLinkedList<char> *ListaCh , DoubleLinkedList<Word> *Lista
     Word *TempWord = new Word();
     string TempText="";
     int posB,posE;
+    int ListLarge = ListaCh->getSize();
 
-    for(int i =0;i<ListaCh->getSize();i++){
+    for(int i =0;i<ListLarge;i++){
 
-        if(ListaCh->getXNode(i) != 32 ){
+        if(ListaCh->getXNode(i) != 32){
+
             posB=i;
-            for(int j =i ;j<ListaCh->getSize();j++){
-                if(ListaCh->getXNode(j) == 32){
+            for(int j = i ;j<ListLarge;j++){
+
+                if(j==ListLarge-1 && ListaCh->getXNode(j) != 32){
+                    posE = j;
+                    i = j;
+                    TempText.push_back(ListaCh->getXNode(j));
+                    TempWord->setPosBegin(posB);
+                    TempWord->setPosEnd(posE);
+                    TempWord->setWord(TempText);
+                    ListaWor->addEnd(*TempWord);
+                    TempText="";
+                    break;
+                }
+                else if(ListaCh->getXNode(j) == 32 ){
                     posE = j-1;
                     i = j-1;
                     TempWord->setPosBegin(posB);
@@ -353,7 +421,7 @@ void divideWords(DoubleLinkedList<char> *ListaCh , DoubleLinkedList<Word> *Lista
                     break;
                 }
                 else{
-                    TempText= TempText+ListaCh->getXNode(j);
+                    TempText.push_back(ListaCh->getXNode(j));
                 }
             }
         }
@@ -364,24 +432,27 @@ void divideWords(DoubleLinkedList<char> *ListaCh , DoubleLinkedList<Word> *Lista
 }
 
 int searchAndReplace (DoubleLinkedList<char> *ListaCh , DoubleLinkedList<Word> *ListaWor, string palabraBuscar , string palabraReemplazar){
-
-    //Word *TempWord = new Word();
+    int ListaWordSize = ListaWor->getSize();
+    int ListaChSize = ListaCh->getSize();
     int Changes=0;
-    for(int i =0;i<ListaCh->getSize();i++){
+    for(int i =0;i<ListaWordSize;i++){
 
-        //*TempWord = ListaWor->getXNode(i);
         if(ListaWor->getXNode(i).getWord() == palabraBuscar){
-
-            for(int j = ListaWor->getXNode(i).getPosBegin() ; j<=ListaWor->getXNode(i).getPosEnd() ; j++){
-                ListaCh->deleteXNode(j);
+            int BeginWord=ListaWor->getXNode(i).getPosBegin();
+            int EndWord=ListaWor->getXNode(i).getPosEnd();
+            for(int j = BeginWord ; j<=EndWord ; j++){
+                ListaCh->deleteXNode(BeginWord);
             }
-            for(int j = ListaWor->getXNode(i).getPosBegin() ; j<=ListaWor->getXNode(i).getPosBegin()+palabraReemplazar.length(); j++){
-                ListaCh->addX(palabraReemplazar.at(j-ListaWor->getXNode(i).getPosBegin()),j);
-                ListaWor->getXNode(i).setPosEnd(j);
+            for(int j = 0 ; j<palabraReemplazar.length(); j++){
+                ListaCh->addX(palabraReemplazar.at(j),BeginWord++);
             }
-            ListaWor->getXNode(i).setWord(palabraReemplazar);
             Changes++;
         }
+        //SE ACTULIZA LISTA DE PALABRAS
+        delete ListaWor;
+        ListaWor = new DoubleLinkedList<Word>;
+        divideWords(ListaCh,ListaWor);
+        ListaWordSize = ListaWor->getSize();
     }
 
     return Changes;
@@ -390,6 +461,7 @@ int searchAndReplace (DoubleLinkedList<char> *ListaCh , DoubleLinkedList<Word> *
 
 
 //FUNCIONES DE CURSOR
+
 void moveBack(WINDOW * win,int posy,int posx){
 
     if(posx == 0 && posy != 0){
