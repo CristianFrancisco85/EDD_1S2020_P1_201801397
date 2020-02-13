@@ -138,36 +138,37 @@ void DoubleLinkedList<T>::addEnd(T Value) {
 
 template <class T>
 void DoubleLinkedList<T>::addX(T Value , int x ) {
-    try {
-        if (this->Head == NULL || x==0 || x>=(this->Size)-1 ) {
-            throw -1;
-        }
-        else {
-            Nodo<T> *NewNode = new Nodo<T>;
-            NewNode->setNodoValue(Value);
-            this->Iterador = this->Head;
-            try {
-                for (int i = 0; i < x; i++) {
-                    if (this->Iterador->getNextNodo() == NULL) {
-                        throw -1;
-                    } else {
-                        this->Iterador = this->Iterador->getNextNodo();
-                    }
-                }
-                this->Iterador->getPrevNodo()->setNextNodo(NewNode);
-                NewNode->setPrevNodo(this->Iterador->getPrevNodo());
-                this->Iterador->setPrevNodo(NewNode);
-                NewNode->setNextNodo(this->Iterador);
-                this->Size++;
-            }
-            catch (int x1) {
-                std::cout << "ERROR -- NO EXISTE NODO EN LA POSICION " << x <<" PARA PODER INSERTAR"<<std::endl;
-            }
-        }
+    if (this->Head == NULL) {
+        addBegin(Value);
     }
-    catch (int x){
-        std::cout<<"ERROR -- LA LISTA ESTA VACIA , NO ES POSIBLE REALIZAR addXNode()"<<std::endl;
-        std::cout<<"ERROR -- PARA INSERTAR EN CABEZA Y COLA UTILIZE addBEgin() y addEnd()";
+    else if(x<=0 ){
+        addBegin(Value);
+    }
+    else if(x>=(this->Size)-1){
+        addEnd(Value);
+    }
+    else {
+        Nodo<T> *NewNode = new Nodo<T>;
+        NewNode->setNodoValue(Value);
+        this->Iterador = this->Head;
+        try {
+            for (int i = 0; i < x; i++) {
+                if (this->Iterador->getNextNodo() == NULL) {
+                    throw -1;
+                } else {
+                    this->Iterador = this->Iterador->getNextNodo();
+                }
+            }
+
+            this->Iterador->getPrevNodo()->setNextNodo(NewNode);
+            NewNode->setPrevNodo(this->Iterador->getPrevNodo());
+            this->Iterador->setPrevNodo(NewNode);
+            NewNode->setNextNodo(this->Iterador);
+            this->Size++;
+        }
+        catch (int x1) {
+            std::cout << "ERROR -- NO EXISTE NODO EN LA POSICION " << x <<" PARA PODER INSERTAR"<<std::endl;
+        }
     }
 }
 
