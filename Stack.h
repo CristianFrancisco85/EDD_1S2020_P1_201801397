@@ -10,6 +10,7 @@ public:
     Stack();
     void push(T Value);
     T pop();
+    T pick();
     int getSize();
 private:
     Nodo<T> *Head;
@@ -36,12 +37,13 @@ void Stack<T>::push(T Value) {
         this->Head->setNextNodo(NewNode);
         NewNode->setPrevNodo(this->Head);
         this->Head=NewNode;
-        this->Size++;
     }
+    this->Size++;
 }
 
 template <class T>
 T Stack<T>::pop() {
+    Nodo<T> NullNodo;
     try {
         if (this->Head == NULL) {
             throw -1;
@@ -62,7 +64,25 @@ T Stack<T>::pop() {
     }
     catch (int x){
         std::cout<<"ERROR -- LA PILA ESTA VACIA , NO ES POSIBLE REALIZAR pop()";
-        return NULL;
+        return NullNodo.getNodoValue();
+    }
+}
+
+template <class T>
+T Stack<T>::pick() {
+    Nodo<T> NullNodo;
+    try {
+        if (this->Head == NULL) {
+            throw -1;
+        }
+        else {
+            T Value = this->Head->getNodoValue();
+            return Value;
+        }
+    }
+    catch (int x){
+        std::cout<<"ERROR -- LA PILA ESTA VACIA , NO ES POSIBLE REALIZAR pick()";
+        return NullNodo.getNodoValue();
     }
 }
 
