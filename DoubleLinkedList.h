@@ -4,9 +4,9 @@
 #include "Word.h"
 
 template <class T>
-class DoubleLinkedList {
+class DoubleLinkedCircularList {
 public:
-    DoubleLinkedList();
+    DoubleLinkedCircularList();
     void addBegin(T Value);
     void addEnd(T Value);
     void addX(T Value , int x);
@@ -23,14 +23,14 @@ private:
 };
 
 template <class T>
-DoubleLinkedList<T>::DoubleLinkedList(){
+DoubleLinkedCircularList<T>::DoubleLinkedCircularList(){
     this->Head=NULL;
     this->Iterador=NULL;
     this->Size=0;
 }
 
 template <class T>
-T DoubleLinkedList<T>::getFirst() {
+T DoubleLinkedCircularList<T>::getFirst() {
 
     try {
         if(this->Head == NULL){
@@ -49,7 +49,7 @@ T DoubleLinkedList<T>::getFirst() {
 }
 
 template <class T>
-T DoubleLinkedList<T>::getLast() {
+T DoubleLinkedCircularList<T>::getLast() {
 
     try {
         if (this->Head == NULL) {
@@ -69,7 +69,7 @@ T DoubleLinkedList<T>::getLast() {
 }
 
 template <class T>
-T DoubleLinkedList<T>::getXNode(int x ){
+T DoubleLinkedCircularList<T>::getXNode(int x ){
     Nodo<T> NullNodo;
     try {
         if (this->Head == NULL) {
@@ -102,7 +102,7 @@ T DoubleLinkedList<T>::getXNode(int x ){
 
 
 template <class T>
-void DoubleLinkedList<T>::addBegin(T Value) {
+void DoubleLinkedCircularList<T>::addBegin(T Value) {
     Nodo<T> *NewNode = new Nodo<T>;
     NewNode->setNodoValue(Value);
     if(this->Head==NULL){
@@ -118,7 +118,7 @@ void DoubleLinkedList<T>::addBegin(T Value) {
 }
 
 template <class T>
-void DoubleLinkedList<T>::addEnd(T Value) {
+void DoubleLinkedCircularList<T>::addEnd(T Value) {
 
     Nodo<T> *NewNode = new Nodo<T>;
     NewNode->setNodoValue(Value);
@@ -137,7 +137,7 @@ void DoubleLinkedList<T>::addEnd(T Value) {
 }
 
 template <class T>
-void DoubleLinkedList<T>::addX(T Value , int x ) {
+void DoubleLinkedCircularList<T>::addX(T Value , int x ) {
     if (this->Head == NULL) {
         addBegin(Value);
     }
@@ -173,7 +173,7 @@ void DoubleLinkedList<T>::addX(T Value , int x ) {
 }
 
 template <class T>
-void DoubleLinkedList<T>::deleteXNode(int x) {
+void DoubleLinkedCircularList<T>::deleteXNode(int x) {
 
     try {
 
@@ -219,7 +219,7 @@ void DoubleLinkedList<T>::deleteXNode(int x) {
 }
 
 template <class T>
-int DoubleLinkedList<T>::getSize() {
+int DoubleLinkedCircularList<T>::getSize() {
     return this->Size;
 }
 
