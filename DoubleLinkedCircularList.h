@@ -113,6 +113,7 @@ void DoubleLinkedCircularList<T>::addBegin(T Value) {
     NewNode->setNodoValue(Value);
     if(this->Head==NULL){
         this->Head=NewNode;
+        NewNode->setNextNodo(this->Head);
     }
     else {
         NewNode->setNextNodo(this->Head);
@@ -128,6 +129,7 @@ void DoubleLinkedCircularList<T>::addEnd(T Value) {
     NewNode->setNodoValue(Value);
     if(this->Head==NULL){
         this->Head=NewNode;
+        NewNode->setNextNodo(this->Head);
     }
     else{
         this->Iterador=this->Head;
@@ -135,6 +137,7 @@ void DoubleLinkedCircularList<T>::addEnd(T Value) {
             this->Iterador = this->Iterador->getNextNodo();
         }
         this->Iterador->setNextNodo(NewNode);
+        NewNode->setNextNodo(this->Head);
     }
     this->Size++;
 }
@@ -173,7 +176,6 @@ void DoubleLinkedCircularList<T>::addX(T Value , int x ) {
 }
 
 
-// AQUI ME QUEDE REVISAR ADDEND Y ADDBEGIN
 template <class T>
 void DoubleLinkedCircularList<T>::deleteXNode(int x) {
 
@@ -192,15 +194,15 @@ void DoubleLinkedCircularList<T>::deleteXNode(int x) {
                         this->Iterador = this->Iterador->getNextNodo();
                     }
                 }
-                if(this->Iterador->getNextNodo() == NULL){
-                    this->Head=NULL;
+                if(this->Iterador->getNextNodo() == this->Head){
+                    //this->Head=NULL;
+                    std::cout << "ERROR -- NO EXISTE NODO EN LA POSICION " << x;
                 }
                 else {
-                    this->Iterador->getPrevNodo()->setNextNodo(this->Iterador->getNextNodo());
-                    this->Iterador->getNextNodo()->setPrevNodo(this->Iterador->getPrevNodo());
+                    this->Iterador->setNextNodo(this->Iterador->getNextNodo()->getNextNodo());
                 }
                 this -> Size--;
-                delete this->Iterador;
+                delete this->Iterador->getNextNodo();
                 this->Iterador = NULL;
             }
             catch (int x1) {
