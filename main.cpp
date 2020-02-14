@@ -7,6 +7,7 @@
 #include <fstream>
 #include <string>
 #include "Change.h"
+#include "Archive.h"
 
 
 using namespace std;
@@ -50,6 +51,9 @@ int searchAndReplace (DoubleLinkedCircularList<char> *ListaCh , DoubleLinkedCirc
 //PIDE PARAMETROS AL USUARIO Y LOS MUESTRA EN PANTALLA
 void showSearchAndReplace(WINDOW * win, DoubleLinkedCircularList<char> *ListaCh, DoubleLinkedCircularList<Word> *ListaWor, Stack<Change> *PilaCa);
 
+//MUESTRA MENU DE ARCHIVOS RECIENTES
+void showRecentArchives(WINDOW * win, DoubleLinkedCircularList<Archive> *ListaArchivos);
+
 // VARIABLES GLOBALES
 
 int archivo=0;
@@ -85,7 +89,9 @@ int main() {
 
     // MOSTRAR MENU
     showMenu(win);
-
+    DoubleLinkedCircularList<Archive> ArchivosRecientes;
+    Archive TempArchivo;
+    string Ruta="";
     bool Control = true;
 
     while(Control){
@@ -101,7 +107,6 @@ int main() {
                 mvwprintw(win, 18, 6, "Escriba Ruta de Archivo: ");
                 wrefresh(win);
                 bool option2Control = true;
-                string Ruta="";
                 while (option2Control) {
                     ch=getch();
                     if (ch > 32 && ch <= 126) {
@@ -112,14 +117,26 @@ int main() {
                     if (ch == 10) {
                         option2Control = false;
                         newArchive(win,Ruta);
+                        TempArchivo.setRuta(Ruta);
+                        string aux=Ruta;
+                        for(int i=0;i<aux.length();i++){
+                            aux = aux.substr(aux.find("/")+1,aux.length()-1);
+                            i=aux.find("/")+1;
+                            if(aux.find("/")==string::npos){
+                                break;
+                            }
+                        }
+                        TempArchivo.setNombre(aux);
+                        ArchivosRecientes.addEnd(TempArchivo);
+                        clearWin(win);
+                        showMenu(win);
                     }
                 }
             }
                 break;
                 //OPCION 3 -- Archivos Recientes
             case 51:
-                wprintw(win,"Ctrl+L");
-                wrefresh(win);
+                showRecentArchives(win,&ArchivosRecientes);
                 break;
                 //OPCION 4 -- Salir
             case 52:
@@ -338,6 +355,43 @@ void newArchive(WINDOW * win, string Archivo){
         }
 
     }
+
+}
+
+void showRecentArchives(WINDOW * win, DoubleLinkedCircularList<Archive> *ListaArchivos){
+
+    clearWin(win);
+    mvwprintw(win,2,5,"ARCHIVOS RECIENTES");
+    for(int i=0; i<ListaArchivos->getSize();i++){
+        Archive TempArchivo = ListaArchivos->getXNode(i);
+        mvwprintw(win,i+5,5,to_string(i).c_str());
+        wprintw(win,". ");
+        wprintw(win,TempArchivo.getNombre().c_str());
+        wprintw(win,"        ");
+        wprintw(win,TempArchivo.getRuta().c_str());
+    }
+    mvwprintw(win,20,5,"INTRODUCZA EL NUMERO DE ARCHIVO PARA ABRIR: ");
+    wrefresh(win);
+
+    int ch;
+    bool Control=true;
+    string numArchivo;
+
+    while(Control){
+        ch= getch();
+        if (ch >= 48 && ch <= 57) {
+            numArchivo.push_back(ch);
+            wprintw(win,"%c", ch);
+            wrefresh(win);
+        }
+        if (ch == 10) {
+            if(stoi(numArchivo)<ListaArchivos->getSize()){
+                newArchive(win,ListaArchivos->getXNode(stoi(numArchivo)).getRuta());
+                Control=false;
+            }
+        }
+    }
+
 
 }
 
