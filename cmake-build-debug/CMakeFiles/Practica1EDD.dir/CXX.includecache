@@ -9,12 +9,20 @@
 /Users/cristianmeono/CLionProjects/Practica1EDD/DoubleLinkedList.h
 Nodo.h
 /Users/cristianmeono/CLionProjects/Practica1EDD/Nodo.h
+Word.h
+/Users/cristianmeono/CLionProjects/Practica1EDD/Word.h
 
 /Users/cristianmeono/CLionProjects/Practica1EDD/Nodo.h
+Word.h
+/Users/cristianmeono/CLionProjects/Practica1EDD/Word.h
 
 /Users/cristianmeono/CLionProjects/Practica1EDD/Stack.h
 Nodo.h
 /Users/cristianmeono/CLionProjects/Practica1EDD/Nodo.h
+iostream
+-
+
+/Users/cristianmeono/CLionProjects/Practica1EDD/Word.h
 iostream
 -
 
@@ -25,6 +33,14 @@ DoubleLinkedList.h
 /Users/cristianmeono/CLionProjects/Practica1EDD/DoubleLinkedList.h
 Stack.h
 /Users/cristianmeono/CLionProjects/Practica1EDD/Stack.h
-ncurses.h
+Word.h
+/Users/cristianmeono/CLionProjects/Practica1EDD/Word.h
+curses.h
+-
+clocale
+-
+fstream
+-
+string
 -
 

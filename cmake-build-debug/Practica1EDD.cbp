@@ -84,6 +84,15 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/Users/cristianmeono/CLionProjects/Practica1EDD/Archive.h">
+			<Option target="Practica1EDD"/>
+		</Unit>
+		<Unit filename="/Users/cristianmeono/CLionProjects/Practica1EDD/Change.h">
+			<Option target="Practica1EDD"/>
+		</Unit>
+		<Unit filename="/Users/cristianmeono/CLionProjects/Practica1EDD/DoubleLinkedCircularList.h">
+			<Option target="Practica1EDD"/>
+		</Unit>
 		<Unit filename="/Users/cristianmeono/CLionProjects/Practica1EDD/DoubleLinkedList.h">
 			<Option target="Practica1EDD"/>
 		</Unit>
@@ -91,6 +100,9 @@
 			<Option target="Practica1EDD"/>
 		</Unit>
 		<Unit filename="/Users/cristianmeono/CLionProjects/Practica1EDD/Stack.h">
+			<Option target="Practica1EDD"/>
+		</Unit>
+		<Unit filename="/Users/cristianmeono/CLionProjects/Practica1EDD/Word.h">
 			<Option target="Practica1EDD"/>
 		</Unit>
 		<Unit filename="/Users/cristianmeono/CLionProjects/Practica1EDD/main.cpp">
