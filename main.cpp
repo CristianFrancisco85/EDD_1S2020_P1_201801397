@@ -868,7 +868,6 @@ void graphArchives(DoubleLinkedCircularList<Archive> *ListaArchivos){
         reporte3++;
 }
 
-void
 
 void deleteChar(WINDOW * win, int posy, int posx, DoubleLinkedList<char> *Lista){
 
