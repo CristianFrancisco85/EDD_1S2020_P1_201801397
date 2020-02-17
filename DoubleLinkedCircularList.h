@@ -49,7 +49,8 @@ T DoubleLinkedCircularList<T>::getFirst() {
     }
     catch (int x){
         std::cout<<"ERROR -- LA LISTA ESTA VACIA , NO ES POSIBLE REALIZAR getFirst()";
-        return NULL;
+        Nodo<T> NullNodo;
+        return NullNodo.getNodoValue();
     }
 
 }
