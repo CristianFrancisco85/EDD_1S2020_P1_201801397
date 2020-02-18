@@ -301,6 +301,7 @@ void newArchive(WINDOW * win, string Archivo){
                 printw("             ^W(Buscar y Reemplazar)  ^C(Reportes)  ^S(GUARDAR)             ");
                 attroff(A_REVERSE);
                 wmove(win,posy,posx);
+                Archivo = "";
             }
                 break;
             // SALIR ^X
@@ -343,12 +344,12 @@ void newArchive(WINDOW * win, string Archivo){
                 if(pointerList>0){
 
                     pointerList--;
-                    //TempChange.setChar(TempArchivo.getXNode(pointerList));
-                    //TempChange.setPointerList(pointerList);
-                    //TempChange.setTipo(false);
-                    //ChangesList->push(TempChange);
-                    ChangesList->clearStack();
-                    RevertList->clearStack();
+                    TempChange.setChar(TempArchivo.getXNode(pointerList));
+                    TempChange.setPointerList(pointerList);
+                    TempChange.setTipo(false);
+                    ChangesList->push(TempChange);
+                    //ChangesList->clearStack();
+                    //RevertList->clearStack();
 
                     moveBack(win,posy,posx);
                     TempArchivo.deleteXNode(pointerList);
@@ -801,6 +802,12 @@ void graphStacks(Stack<Change> PilaCa, Stack<Change> PilaCaR){
                 aux.push_back(TempCambio.getChar());
                 file<< aux <<endl;
                 file<< " Posicion : "+to_string(TempCambio.getPointerList())<<endl;
+                if(TempCambio.getTipo()){
+                    file<< " Accion : Escrito  "<<endl;
+                }
+                else{
+                    file<< " Estado : Borrado  "<<endl;
+                }
             }
             file<<"\""<<endl;
             file<<"->"<<endl;
@@ -834,6 +841,12 @@ void graphStacks(Stack<Change> PilaCa, Stack<Change> PilaCaR){
                 aux.push_back(TempCambio.getChar());
                 file<< aux <<endl;
                 file<< " Posicion : "+to_string(TempCambio.getPointerList())<<endl;
+                if(TempCambio.getTipo()){
+                    file<< " Accion : Escrito  "<<endl;
+                }
+                else{
+                    file<< " Estado : Borrado  "<<endl;
+                }
             }
             file<<"\""<<endl;
             file<<"->"<<endl;
