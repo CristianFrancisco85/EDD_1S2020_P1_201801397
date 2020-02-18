@@ -1,6 +1,6 @@
 #include <iostream>
 #include "DoubleLinkedList.h"
-#include "DoubleLinkedCircularList.h"
+#include "LinkedCircularList.h"
 #include "Stack.h"
 #include "Word.h"
 #include <curses.h>
@@ -9,6 +9,8 @@
 #include <string>
 #include "Change.h"
 #include "Archive.h"
+#include "LinkedList.h"
+#include <math.h>
 
 
 using namespace std;
@@ -53,19 +55,27 @@ int searchAndReplace (DoubleLinkedList<char> *ListaCh , DoubleLinkedList<Word> *
 void showSearchAndReplace(WINDOW * win, DoubleLinkedList<char> *ListaCh, DoubleLinkedList<Word> *ListaWor, Stack<Change> *PilaCa);
 
 //MUESTRA MENU DE ARCHIVOS RECIENTES
-void showRecentArchives(WINDOW * win, DoubleLinkedCircularList<Archive> *ListaArchivos);
+void showRecentArchives(WINDOW * win, LinkedCircularList<Archive> *ListaArchivos);
 
 //GRAFICA LA PILA DE CAMBIOS Y LA DE CAMBIOS REVERTIDOS
 void graphStacks(Stack<Change> PilaCa, Stack<Change> PilaCaR);
 
 //GRAFICA LISTA DE ARCHIVOS
-void graphArchives(DoubleLinkedCircularList<Archive> *ListaArchivos);
+void graphArchives(LinkedCircularList<Archive> *ListaArchivos);
+
+//ORDENA Y GRAFICA DE PILA DE CAMBIOS EN ORDEN ALFABETICO
+void binarySort (Stack<Change> PilaCa,Stack<Change> PilaCa2);
 
 // VARIABLES GLOBALES
 
+//CARACTERES
 int reporte1=0;
+// PILAS
 int reporte2=0;
+//ARCHIVOS
 int reporte3=0;
+//LISTA ORDENADA
+int reporte4=0;
 
 // FUNCIONES PRINCIPALES
 
@@ -98,7 +108,7 @@ int main() {
 
     // MOSTRAR MENU
     showMenu(win);
-    DoubleLinkedCircularList<Archive> ArchivosRecientes;
+    LinkedCircularList<Archive> ArchivosRecientes;
     Archive TempArchivo;
     string Ruta="";
     bool Control = true;
@@ -431,7 +441,7 @@ void newArchive(WINDOW * win, string Archivo){
 
 }
 
-void showRecentArchives(WINDOW * win, DoubleLinkedCircularList<Archive> *ListaArchivos){
+void showRecentArchives(WINDOW * win, LinkedCircularList<Archive> *ListaArchivos){
 
     clearWin(win);
     mvwprintw(win,2,5,"ARCHIVOS RECIENTES");
@@ -515,6 +525,12 @@ void showReportsMenu(WINDOW * win, DoubleLinkedList<char> *Lista, Stack<Change> 
                 break;
                 //OPCION 3 -- Palabras Ordenadas
             case 51:
+            {
+                if(PilaCa->pick().getPalabraBuscar()!=""){
+                    binarySort(*PilaCa,*PilaCa);
+                }
+                Control=false;
+            }
                 break;
                 //OPCION 4 -- Salir Ctrl+X
             case 24:
@@ -833,7 +849,7 @@ void graphStacks(Stack<Change> PilaCa, Stack<Change> PilaCaR){
     reporte2++;
 }
 
-void graphArchives(DoubleLinkedCircularList<Archive> *ListaArchivos){
+void graphArchives(LinkedCircularList<Archive> *ListaArchivos){
     string command = "";
     string aux = "";
     ofstream file;
@@ -868,6 +884,112 @@ void graphArchives(DoubleLinkedCircularList<Archive> *ListaArchivos){
         reporte3++;
 }
 
+void binarySort (Stack<Change> PilaCa,Stack<Change> PilaCa2){
+    LinkedList<Change> *ListaCambios = new LinkedList<Change>;
+    int pivote,primero,ultimo;
+    int StackSize;
+    Change TempChange;
+    string TempString,PivoteString;
+
+    ListaCambios->addBegin(PilaCa.pop());
+
+    StackSize=PilaCa.getSize();
+    for(int i = 0 ; i<StackSize ; i++){
+        primero=0;
+        ultimo=ListaCambios->getSize()-1;
+        TempChange=PilaCa.pop();
+        TempString=TempChange.getPalabraBuscar();
+        while(primero<=ultimo){
+            pivote = floor((primero+ultimo)/2);
+            PivoteString = ListaCambios->getXNode(pivote).getPalabraBuscar();
+
+            if(TempString.compare(PivoteString)<0){
+                ultimo = pivote-1;
+            }
+            else{
+                primero=pivote+1;
+            }
+        }
+
+        ListaCambios->addX(TempChange,primero);
+    }
+
+
+    string command = "";
+    ofstream file;
+    file.open("./Buscadas" + to_string(reporte4) + ".dot", fstream::in | fstream::out | fstream::trunc);
+    file << "digraph {";
+    file << "node [shape=box];"<<endl;
+    file << "rankdir=LR;"<<endl;
+    for(int i =0;i<ListaCambios->getSize();i++){
+        TempChange = ListaCambios->getXNode(i);
+        file << "\" "<<endl;
+        file << TempChange.getPalabraBuscar()<<endl;
+        file << "Reemplazada por : ";
+        file << TempChange.getPalabraReemplazar()<<endl;
+        file << "\" "<<endl;
+        file << "->"<<endl;
+    }
+    file << "\"FIN\""<<endl;
+    file << "}";
+    file.close();
+    command = "dot -Tpng ./Buscadas" + to_string(reporte4) + ".dot -o BuscadasImagen" + to_string(reporte4) + ".png >>/dev/null 2>>/dev/null";
+    system(command.c_str());
+
+
+    //SEGUNDA GRAFICA
+    delete ListaCambios;
+    ListaCambios = new LinkedList<Change>;
+
+    ListaCambios->addBegin(PilaCa2.pop());
+
+    StackSize=PilaCa2.getSize();
+    for(int i = 0 ; i<StackSize ; i++){
+        primero=0;
+        ultimo=ListaCambios->getSize()-1;
+        TempChange=PilaCa2.pop();
+        TempString=TempChange.getPalabraReemplazar();
+        while(primero<=ultimo){
+            pivote = floor((primero+ultimo)/2);
+            PivoteString = ListaCambios->getXNode(pivote).getPalabraReemplazar();
+
+            if(TempString.compare(PivoteString)<0){
+                ultimo = pivote-1;
+            }
+            else{
+                primero=pivote+1;
+            }
+        }
+
+        ListaCambios->addX(TempChange,primero);
+    }
+
+
+    command = "";
+    file.open("./Reemplazos" + to_string(reporte4) + ".dot", fstream::in | fstream::out | fstream::trunc);
+    file << "digraph {";
+    file << "node [shape=box];"<<endl;
+    file << "rankdir=LR;"<<endl;
+    for(int i =0;i<ListaCambios->getSize();i++){
+        TempChange = ListaCambios->getXNode(i);
+        file << "\" "<<endl;
+        file << TempChange.getPalabraReemplazar()<<endl;
+        file << "Reemplazo a : ";
+        file << TempChange.getPalabraBuscar()<<endl;
+        file << "\" "<<endl;
+        file << "->"<<endl;
+    }
+    file << "\"FIN\""<<endl;
+    file << "}";
+    file.close();
+    command = "dot -Tpng ./Reemplazos" + to_string(reporte4) + ".dot -o ReemplazosImagen" + to_string(reporte4) + ".png >>/dev/null 2>>/dev/null";
+    system(command.c_str());
+    reporte4++;
+
+
+
+
+}
 
 void deleteChar(WINDOW * win, int posy, int posx, DoubleLinkedList<char> *Lista){
 
