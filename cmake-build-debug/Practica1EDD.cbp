@@ -96,6 +96,9 @@
 		<Unit filename="/Users/cristianmeono/CLionProjects/Practica1EDD/DoubleLinkedList.h">
 			<Option target="Practica1EDD"/>
 		</Unit>
+		<Unit filename="/Users/cristianmeono/CLionProjects/Practica1EDD/LinkedList.h">
+			<Option target="Practica1EDD"/>
+		</Unit>
 		<Unit filename="/Users/cristianmeono/CLionProjects/Practica1EDD/Nodo.h">
 			<Option target="Practica1EDD"/>
 		</Unit>
