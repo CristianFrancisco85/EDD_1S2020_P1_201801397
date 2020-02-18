@@ -2,17 +2,17 @@
 // Created by Cristian on 13/02/20.
 //
 
-#ifndef PRACTICA1EDD_DOUBLELINKEDCIRCULARLIST_H
-#define PRACTICA1EDD_DOUBLELINKEDCIRCULARLIST_H
+#ifndef PRACTICA1EDD_LINKEDCIRCULARLIST_H
+#define PRACTICA1EDD_LINKEDCIRCULARLIST_H
 
 
 #include "Nodo.h"
 #include "Word.h"
 
 template <class T>
-class DoubleLinkedCircularList {
+class LinkedCircularList {
 public:
-    DoubleLinkedCircularList();
+    LinkedCircularList();
     void addBegin(T Value);
     void addEnd(T Value);
     void addX(T Value , int x);
@@ -29,14 +29,14 @@ private:
 };
 
 template <class T>
-DoubleLinkedCircularList<T>::DoubleLinkedCircularList(){
+LinkedCircularList<T>::LinkedCircularList(){
     this->Head=NULL;
     this->Iterador=NULL;
     this->Size=0;
 }
 
 template <class T>
-T DoubleLinkedCircularList<T>::getFirst() {
+T LinkedCircularList<T>::getFirst() {
 
     try {
         if(this->Head == NULL){
@@ -56,7 +56,7 @@ T DoubleLinkedCircularList<T>::getFirst() {
 }
 
 template <class T>
-T DoubleLinkedCircularList<T>::getLast() {
+T LinkedCircularList<T>::getLast() {
 
     try {
         if (this->Head == NULL) {
@@ -76,7 +76,7 @@ T DoubleLinkedCircularList<T>::getLast() {
 }
 
 template <class T>
-T DoubleLinkedCircularList<T>::getXNode(int x ){
+T LinkedCircularList<T>::getXNode(int x ){
     Nodo<T> NullNodo;
     try {
         if (this->Head == NULL) {
@@ -109,7 +109,7 @@ T DoubleLinkedCircularList<T>::getXNode(int x ){
 
 
 template <class T>
-void DoubleLinkedCircularList<T>::addBegin(T Value) {
+void LinkedCircularList<T>::addBegin(T Value) {
     Nodo<T> *NewNode = new Nodo<T>;
     NewNode->setNodoValue(Value);
     if(this->Head==NULL){
@@ -124,7 +124,7 @@ void DoubleLinkedCircularList<T>::addBegin(T Value) {
 }
 
 template <class T>
-void DoubleLinkedCircularList<T>::addEnd(T Value) {
+void LinkedCircularList<T>::addEnd(T Value) {
 
     Nodo<T> *NewNode = new Nodo<T>;
     NewNode->setNodoValue(Value);
@@ -144,7 +144,7 @@ void DoubleLinkedCircularList<T>::addEnd(T Value) {
 }
 
 template <class T>
-void DoubleLinkedCircularList<T>::addX(T Value , int x ) {
+void LinkedCircularList<T>::addX(T Value , int x ) {
     if (this->Head == NULL) {
         addBegin(Value);
     }
@@ -178,7 +178,7 @@ void DoubleLinkedCircularList<T>::addX(T Value , int x ) {
 
 
 template <class T>
-void DoubleLinkedCircularList<T>::deleteXNode(int x) {
+void LinkedCircularList<T>::deleteXNode(int x) {
 
     try {
 
@@ -217,9 +217,9 @@ void DoubleLinkedCircularList<T>::deleteXNode(int x) {
 }
 
 template <class T>
-int DoubleLinkedCircularList<T>::getSize() {
+int LinkedCircularList<T>::getSize() {
     return this->Size;
 }
 
 
-#endif //PRACTICA1EDD_DOUBLELINKEDCIRCULARLIST_H
+#endif //PRACTICA1EDD_LINKEDCIRCULARLIST_H
